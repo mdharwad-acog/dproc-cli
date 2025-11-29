@@ -1,0 +1,6 @@
+name,age,city,active,salary
+John,30,NYC,true,75000
+Jane,25,LA,true,65000
+Bob,35,Chicago,false,85000
+Alice,28,Seattle,true,70000
+Mike,32,Boston,true,80000

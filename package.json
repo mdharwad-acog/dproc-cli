@@ -1,0 +1,53 @@
+{
+"name": "@aganitha/dproc-cli",
+  "version": "1.0.0",
+  "description": "CLI tool for dproc - AI-powered data processing",
+  "type": "module",
+  "bin": {
+    "dproc": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "link": "npm link"
+  },
+  "keywords": [
+    "cli",
+    "data-processing",
+    "ai",
+    "dproc",
+    "aganitha"
+  ],
+  "author": "acog-mdharwad",
+  "publishConfig": {
+    "registry": "https://npm.aganitha.ai/"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@10.23.0",
+  "dependencies": {
+    "@aganitha/dproc": "^1.0.2",
+    "boxen": "^8.0.1",
+    "chalk": "^5.6.2",
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.2",
+    "debug": "^4.4.3",
+    "fs-extra": "^11.3.2",
+    "inquirer": "^13.0.1",
+    "ora": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.12",
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
+}

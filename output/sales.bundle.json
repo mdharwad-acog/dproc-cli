@@ -1,0 +1,237 @@
+{
+  "metadata": {
+    "source": "sales",
+    "sourceFile": "sales-data.csv",
+    "format": "csv",
+    "ingestedAt": "2025-11-28T05:29:59.254Z",
+    "recordCount": 10,
+    "processingSteps": [
+      "ingestion"
+    ]
+  },
+  "records": [
+    {
+      "product": "Laptop",
+      "category": "Electronics",
+      "price": "999.99",
+      "quantity": "50",
+      "sold": "true",
+      "region": "North",
+      "date": "2024-01-15"
+    },
+    {
+      "product": "Mouse",
+      "category": "Electronics",
+      "price": "29.99",
+      "quantity": "200",
+      "sold": "true",
+      "region": "South",
+      "date": "2024-01-16"
+    },
+    {
+      "product": "Keyboard",
+      "category": "Electronics",
+      "price": "79.99",
+      "quantity": "150",
+      "sold": "true",
+      "region": "East",
+      "date": "2024-01-17"
+    },
+    {
+      "product": "Monitor",
+      "category": "Electronics",
+      "price": "299.99",
+      "quantity": "75",
+      "sold": "false",
+      "region": "West",
+      "date": "2024-01-18"
+    },
+    {
+      "product": "Desk",
+      "category": "Furniture",
+      "price": "499.99",
+      "quantity": "30",
+      "sold": "true",
+      "region": "North",
+      "date": "2024-01-19"
+    },
+    {
+      "product": "Chair",
+      "category": "Furniture",
+      "price": "199.99",
+      "quantity": "80",
+      "sold": "true",
+      "region": "South",
+      "date": "2024-01-20"
+    },
+    {
+      "product": "Lamp",
+      "category": "Furniture",
+      "price": "49.99",
+      "quantity": "120",
+      "sold": "false",
+      "region": "East",
+      "date": "2024-01-21"
+    },
+    {
+      "product": "Notebook",
+      "category": "Stationery",
+      "price": "5.99",
+      "quantity": "500",
+      "sold": "true",
+      "region": "West",
+      "date": "2024-01-22"
+    },
+    {
+      "product": "Pen",
+      "category": "Stationery",
+      "price": "1.99",
+      "quantity": "1000",
+      "sold": "true",
+      "region": "North",
+      "date": "2024-01-23"
+    },
+    {
+      "product": "Stapler",
+      "category": "Stationery",
+      "price": "9.99",
+      "quantity": "300",
+      "sold": "true",
+      "region": "South",
+      "date": "2024-01-24"
+    }
+  ],
+  "stats": {
+    "fieldStats": {
+      "product": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 10
+      },
+      "category": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 3
+      },
+      "price": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 10
+      },
+      "quantity": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 10
+      },
+      "sold": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 2
+      },
+      "region": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 4
+      },
+      "date": {
+        "type": "string",
+        "nullCount": 0,
+        "uniqueCount": 10
+      }
+    }
+  },
+  "samples": {
+    "main": [
+      {
+        "product": "Laptop",
+        "category": "Electronics",
+        "price": "999.99",
+        "quantity": "50",
+        "sold": "true",
+        "region": "North",
+        "date": "2024-01-15"
+      },
+      {
+        "product": "Mouse",
+        "category": "Electronics",
+        "price": "29.99",
+        "quantity": "200",
+        "sold": "true",
+        "region": "South",
+        "date": "2024-01-16"
+      },
+      {
+        "product": "Keyboard",
+        "category": "Electronics",
+        "price": "79.99",
+        "quantity": "150",
+        "sold": "true",
+        "region": "East",
+        "date": "2024-01-17"
+      },
+      {
+        "product": "Monitor",
+        "category": "Electronics",
+        "price": "299.99",
+        "quantity": "75",
+        "sold": "false",
+        "region": "West",
+        "date": "2024-01-18"
+      },
+      {
+        "product": "Desk",
+        "category": "Furniture",
+        "price": "499.99",
+        "quantity": "30",
+        "sold": "true",
+        "region": "North",
+        "date": "2024-01-19"
+      },
+      {
+        "product": "Chair",
+        "category": "Furniture",
+        "price": "199.99",
+        "quantity": "80",
+        "sold": "true",
+        "region": "South",
+        "date": "2024-01-20"
+      },
+      {
+        "product": "Lamp",
+        "category": "Furniture",
+        "price": "49.99",
+        "quantity": "120",
+        "sold": "false",
+        "region": "East",
+        "date": "2024-01-21"
+      },
+      {
+        "product": "Notebook",
+        "category": "Stationery",
+        "price": "5.99",
+        "quantity": "500",
+        "sold": "true",
+        "region": "West",
+        "date": "2024-01-22"
+      },
+      {
+        "product": "Pen",
+        "category": "Stationery",
+        "price": "1.99",
+        "quantity": "1000",
+        "sold": "true",
+        "region": "North",
+        "date": "2024-01-23"
+      },
+      {
+        "product": "Stapler",
+        "category": "Stationery",
+        "price": "9.99",
+        "quantity": "300",
+        "sold": "true",
+        "region": "South",
+        "date": "2024-01-24"
+      }
+    ]
+  }
+}

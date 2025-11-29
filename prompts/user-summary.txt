@@ -1,0 +1,9 @@
+Analyze the provided user data and create a comprehensive summary.
+
+Include:
+1. Demographic insights (age distribution, geographic spread)
+2. Salary analysis (range, average, patterns)
+3. Activity status overview
+4. Key observations and trends
+
+Provide the analysis in markdown format with bullet points and clear sections.
