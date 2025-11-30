@@ -1,0 +1,9 @@
+ignoredBuiltDependencies:
+  - keytar
+
+onlyBuiltDependencies:
+  - lzo
+  - puppeteer
+
+overrides:
+  '@aganitha/dproc': link:../dproc

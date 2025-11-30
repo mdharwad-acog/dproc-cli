@@ -1,6 +1,6 @@
-# Analysis of sales-data (10 records)
+# Analysis of sales-data.csv (10 records)
 
-**Generated at:** 2025-11-28T10:54:32.450Z  
+**Generated at:** 2025-11-30T10:00:55.514Z  
 **Total records:** 10  
 **Fields:** product, category, price, quantity, sold, region, date
 

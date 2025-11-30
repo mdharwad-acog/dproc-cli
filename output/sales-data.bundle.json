@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "source": "sales-data",
-    "sourceFile": "sales-data.csv",
+    "source": "sales-data.csv",
+    "sourceFile": "unknown",
     "format": "csv",
-    "ingestedAt": "2025-11-28T10:54:00.012Z",
+    "ingestedAt": "2025-11-30T09:58:31.080Z",
     "recordCount": 10,
     "processingSteps": [
       "ingestion"

@@ -1,6 +1,6 @@
 {
-"name": "@aganitha/dproc-cli",
-  "version": "1.0.0",
+  "name": "@aganitha/dproc-cli",
+  "version": "1.0.1",
   "description": "CLI tool for dproc - AI-powered data processing",
   "type": "module",
   "bin": {
@@ -33,15 +33,20 @@
   },
   "packageManager": "pnpm@10.23.0",
   "dependencies": {
-    "@aganitha/dproc": "^1.0.2",
+    "@aganitha/dproc": "file:../dproc",
+    "@inquirer/prompts": "^8.0.1",
     "boxen": "^8.0.1",
     "chalk": "^5.6.2",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.2",
     "debug": "^4.4.3",
+    "dotenv": "^17.2.3",
     "fs-extra": "^11.3.2",
     "inquirer": "^13.0.1",
-    "ora": "^9.0.0"
+    "keytar": "^7.9.0",
+    "marked": "^17.0.1",
+    "ora": "^9.0.0",
+    "puppeteer": "^24.31.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",

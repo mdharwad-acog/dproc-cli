@@ -1,32 +1,32 @@
 // src/commands/export.ts
-import { Command } from 'commander';
-import { ConfigManager } from '@aganitha/dproc';
-import { createLogger } from '../utils/logger.js';
-import { Display } from '../utils/display.js';
-import { createSpinner } from '../utils/spinner.js';
-import { readFile, writeFile } from 'fs/promises';
-import { basename, dirname } from 'path';
-import { marked } from 'marked';
-import puppeteer from 'puppeteer';
-import pkg from 'fs-extra';
+import { Command } from "commander";
+import { ConfigManager } from "@aganitha/dproc";
+import { createLogger } from "../utils/logger.js";
+import { Display } from "../utils/display.js";
+import { createSpinner } from "../utils/spinner.js";
+import { readFile, writeFile, unlink } from "fs/promises";
+import { basename, dirname, resolve } from "path"; // ✅ Added resolve
+import { marked } from "marked";
+import puppeteer from "puppeteer";
+import pkg from "fs-extra";
 const { mkdir } = pkg;
 
-const log = createLogger('export');
+const log = createLogger("export");
 
 export function createExportCommand(): Command {
-  const command = new Command('export');
+  const command = new Command("export");
 
   command
-    .description('Export markdown to other formats')
-    .argument('<input>', 'Input markdown file')
-    .option('--html', 'Export to HTML')
-    .option('--pdf', 'Export to PDF')
-    .option('--mdx', 'Export to MDX')
-    .option('--title <title>', 'Document title')
-    .option('--author <author>', 'Document author')
-    .option('--toc', 'Include table of contents')
+    .description("Export markdown to other formats")
+    .argument("<input>", "Input markdown file")
+    .option("--html", "Export to HTML")
+    .option("--pdf", "Export to PDF")
+    .option("--mdx", "Export to MDX")
+    .option("--title <title>", "Document title")
+    .option("--author <author>", "Document author")
+    .option("--toc", "Include table of contents")
     .action(async (inputPath: string, options: any) => {
-      const spinner = createSpinner('Loading configuration...');
+      const spinner = createSpinner("Loading configuration...");
 
       try {
         // Load config
@@ -34,54 +34,61 @@ export function createExportCommand(): Command {
         await ConfigManager.load();
         spinner.succeed();
 
-        const baseName = basename(inputPath, '.md');
+        const baseName = basename(inputPath, ".md");
         const baseDir = dirname(inputPath);
         const formats = [];
 
-        if (options.html) formats.push('html');
-        if (options.pdf) formats.push('pdf');
-        if (options.mdx) formats.push('mdx');
+        if (options.html) formats.push("html");
+        if (options.pdf) formats.push("pdf");
+        if (options.mdx) formats.push("mdx");
 
         if (formats.length === 0) {
-          log.error('No export format specified. Use --html, --pdf, or --mdx');
+          log.error("No export format specified. Use --html, --pdf, or --mdx");
           process.exit(1);
         }
 
         // Read markdown content
-        const markdown = await readFile(inputPath, 'utf-8');
+        const markdown = await readFile(inputPath, "utf-8");
 
-        Display.section('Export');
+        Display.section("Export");
+
+        const exportedFiles = [];
 
         for (const format of formats) {
           spinner.start(`Exporting to ${format.toUpperCase()}...`);
-          
+
           const outputPath = `${baseDir}/${baseName}.${format}`;
-          
+
           try {
-            if (format === 'html') {
+            if (format === "html") {
               await exportToHtml(markdown, outputPath, options);
-            } else if (format === 'pdf') {
+            } else if (format === "pdf") {
               await exportToPdf(markdown, outputPath, options);
-            } else if (format === 'mdx') {
+            } else if (format === "mdx") {
               await exportToMdx(markdown, outputPath, options);
             }
 
             spinner.succeed(`Exported to ${outputPath}`);
+            exportedFiles.push(outputPath);
           } catch (err: any) {
             spinner.fail(`Failed to export to ${format}`);
             log.error(err.message);
           }
         }
 
-        Display.empty();
-        Display.welcome('✓ Export complete!');
-        Display.empty();
+        if (exportedFiles.length > 0) {
+          Display.empty();
+          Display.welcome("✓ Export complete!");
+          Display.empty();
 
-        console.log('Exported files:');
-        Display.list(formats.map(f => `${baseDir}/${baseName}.${f}`));
-
+          console.log("Exported files:");
+          Display.list(exportedFiles);
+        } else {
+          Display.empty();
+          console.log("❌ No files were exported successfully");
+        }
       } catch (error: any) {
-        spinner.fail('Export failed');
+        spinner.fail("Export failed");
         log.error(error.message);
         process.exit(1);
       }
@@ -90,10 +97,14 @@ export function createExportCommand(): Command {
   return command;
 }
 
-async function exportToHtml(markdown: string, outputPath: string, options: any) {
+async function exportToHtml(
+  markdown: string,
+  outputPath: string,
+  options: any
+) {
   const html = marked.parse(markdown);
-  const title = options.title || 'Report';
-  const author = options.author || '';
+  const title = options.title || "Report";
+  const author = options.author || "";
 
   const fullHtml = `<!DOCTYPE html>
 <html>
@@ -119,46 +130,66 @@ async function exportToHtml(markdown: string, outputPath: string, options: any) 
   </style>
 </head>
 <body>
-  ${options.toc ? generateTOC(markdown) : ''}
+  ${options.toc ? generateTOC(markdown) : ""}
   ${html}
-  ${author ? `<hr><p><em>Author: ${author}</em></p>` : ''}
+  ${author ? `<hr><p><em>Author: ${author}</em></p>` : ""}
 </body>
 </html>`;
 
   await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, fullHtml, 'utf-8');
+  await writeFile(outputPath, fullHtml, "utf-8");
 }
 
 async function exportToPdf(markdown: string, outputPath: string, options: any) {
   // First create HTML
-  const tempHtmlPath = outputPath.replace('.pdf', '.temp.html');
+  const tempHtmlPath = outputPath.replace(".pdf", ".temp.html");
   await exportToHtml(markdown, tempHtmlPath, options);
 
+  // ✅ Convert relative path to absolute path
+  const absoluteTempPath = resolve(tempHtmlPath);
+  const absoluteOutputPath = resolve(outputPath);
+
+  log.info("Temp HTML path: %s", absoluteTempPath);
+  log.info("Output PDF path: %s", absoluteOutputPath);
+
   // Convert to PDF
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+
   const page = await browser.newPage();
-  await page.goto(`file://${tempHtmlPath}`, { waitUntil: 'networkidle0' });
-  
+
+  // ✅ Use absolute path with file:// protocol
+  await page.goto(`file://${absoluteTempPath}`, {
+    waitUntil: "networkidle0",
+  });
+
   await page.pdf({
-    path: outputPath,
-    format: 'A4',
-    margin: { top: '1cm', right: '1cm', bottom: '1cm', left: '1cm' },
+    path: absoluteOutputPath,
+    format: "A4",
+    margin: { top: "1cm", right: "1cm", bottom: "1cm", left: "1cm" },
+    printBackground: true,
   });
 
   await browser.close();
 
   // Clean up temp HTML
-  const fs = await import('fs/promises');
-  await fs.unlink(tempHtmlPath);
+  try {
+    await unlink(tempHtmlPath);
+    log.info("Cleaned up temp file: %s", tempHtmlPath);
+  } catch (e) {
+    log.warn("Failed to clean up temp file");
+  }
 }
 
 async function exportToMdx(markdown: string, outputPath: string, options: any) {
-  const title = options.title || 'Report';
-  const author = options.author || '';
+  const title = options.title || "Report";
+  const author = options.author || "";
 
   const mdx = `---
 title: "${title}"
-${author ? `author: "${author}"` : ''}
+${author ? `author: "${author}"` : ""}
 date: "${new Date().toISOString()}"
 ---
 
@@ -166,23 +197,25 @@ ${markdown}
 `;
 
   await mkdir(dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, mdx, 'utf-8');
+  await writeFile(outputPath, mdx, "utf-8");
 }
 
 function generateTOC(markdown: string): string {
   const headings = markdown.match(/^#{1,3}\s+.+$/gm) || [];
-  if (headings.length === 0) return '';
+  if (headings.length === 0) return "";
 
   let toc = '<nav class="toc"><h2>Table of Contents</h2><ul>';
-  
-  headings.forEach(heading => {
+
+  headings.forEach((heading) => {
     const level = heading.match(/^#+/)?.[0].length || 1;
-    const text = heading.replace(/^#+\s+/, '');
-    const id = text.toLowerCase().replace(/[^\w]+/g, '-');
-    
-    toc += `<li style="margin-left: ${(level - 1) * 1.5}rem"><a href="#${id}">${text}</a></li>`;
+    const text = heading.replace(/^#+\s+/, "");
+    const id = text.toLowerCase().replace(/[^\w]+/g, "-");
+
+    toc += `<li style="margin-left: ${
+      (level - 1) * 1.5
+    }rem"><a href="#${id}">${text}</a></li>`;
   });
-  
-  toc += '</ul></nav><hr>';
+
+  toc += "</ul></nav><hr>";
   return toc;
 }
