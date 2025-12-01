@@ -1,4 +1,3 @@
-// src/commands/config.ts
 import { Command } from "commander";
 import { ConfigManager } from "../config/manager.js";
 import { createLogger } from "../utils/logger.js";
@@ -16,40 +15,61 @@ export function createConfigCommand(): Command {
   // Set API key
   command
     .command("set-key")
-    .description("Store API key securely in system keychain")
-    .argument("<provider>", "LLM provider (openai, gemini, deepseek)")
+    .description("Store API key (keychain or environment)")
+    .argument("<provider>", "LLM provider (gemini, openai, deepseek)")
     .argument("<key>", "API key")
     .action(async (provider: string, key: string) => {
       const spinner = ora(`Storing ${provider} API key...`).start();
 
       try {
         await ConfigManager.setApiKey(provider, key);
-        spinner.succeed(`API key for ${provider} stored securely`);
+        spinner.succeed(chalk.green(`✓ API key stored in keychain (🔐)`));
       } catch (error: any) {
-        spinner.fail("Failed to store API key");
-        log.error(error.message);
-        process.exit(1);
+        spinner.warn(chalk.yellow("⚠ Keytar unavailable"));
+
+        // Fallback to environment variable
+        const envVar = `${provider.toUpperCase()}_API_KEY`;
+        process.env[envVar] = key;
+
+        console.log(
+          chalk.cyan(
+            `\nℹ️  Environment variable set for current session:\n` +
+              `  ${envVar}="${key.substring(0, 8)}..."\n\n` +
+              `💡 To make permanent:\n` +
+              `  echo 'export ${envVar}="${key}"' >> ~/.bashrc`
+          )
+        );
       }
     });
 
-  // Get API key (masked)
+  // Get API key (with source)
   command
     .command("get-key")
-    .description("Retrieve API key (masked)")
+    .description("Show API key status and source")
     .argument("<provider>", "LLM provider")
     .action(async (provider: string) => {
       try {
-        const key = await ConfigManager.getApiKey(provider);
+        const { key, source } = await ConfigManager.getApiKeyWithSource(
+          provider
+        );
+
+        console.log(chalk.bold(`${provider} API Key:`));
 
         if (key) {
-          const masked = key.substring(0, 8) + "...";
-          console.log(chalk.green(`✓ API key for ${provider}: ${masked}`));
+          const masked =
+            key.substring(0, 8) + "..." + key.substring(key.length - 4);
+          const sourceIcon =
+            source === "keytar" ? "🔐 Keychain" : "📝 Environment";
+          console.log(chalk.green(`  ✓ ${masked}`));
+          console.log(chalk.cyan(`  Source: ${sourceIcon}`));
         } else {
-          console.log(chalk.yellow(`⚠ No API key found for ${provider}`));
+          console.log(chalk.yellow(`  ⚠ Not found`));
+          console.log(
+            chalk.dim(`  Set with: dproc config set-key ${provider} <key>`)
+          );
         }
       } catch (error: any) {
         log.error(error.message);
-        process.exit(1);
       }
     });
 
@@ -67,35 +87,38 @@ export function createConfigCommand(): Command {
         if (deleted) {
           spinner.succeed(`API key for ${provider} deleted`);
         } else {
-          spinner.warn(`No API key found for ${provider}`);
+          spinner.warn(`No API key found in keychain for ${provider}`);
         }
       } catch (error: any) {
-        spinner.fail("Failed to delete API key");
-        log.error(error.message);
-        process.exit(1);
+        spinner.warn("Keytar unavailable");
+        console.log(chalk.gray("No keychain storage to delete from"));
       }
     });
 
-  // List stored keys
+  // List stored keys (with sources)
   command
     .command("list-keys")
-    .description("List stored API key providers")
+    .description("List all API keys with sources")
     .action(async () => {
       try {
-        const providers = await ConfigManager.listApiKeys();
+        const keysWithSources = await ConfigManager.listApiKeysWithSources();
 
-        if (providers.length === 0) {
-          console.log(chalk.yellow("No API keys stored"));
+        if (keysWithSources.length === 0) {
+          console.log(chalk.yellow("No API keys configured"));
+          console.log(
+            chalk.dim("Set with: dproc config set-key <provider> <key>")
+          );
           return;
         }
 
-        Display.section("Stored API keys:");
-        providers.forEach((provider) => {
-          console.log(chalk.green(`  ✓ ${provider}`));
+        Display.section("API Keys:");
+        keysWithSources.forEach(({ provider, source }) => {
+          const icon = source === "keytar" ? "🔐" : "📝";
+          const sourceText = source === "keytar" ? "Keychain" : "Environment";
+          console.log(chalk.green(`  ${icon} ${provider} (${sourceText})`));
         });
       } catch (error: any) {
         log.error(error.message);
-        process.exit(1);
       }
     });
 
@@ -124,25 +147,61 @@ export function createConfigCommand(): Command {
       }
     });
 
-  // Show configuration
+  // Show configuration (enhanced with sources)
   command
     .command("show")
-    .description("Display current configuration (API keys masked)")
+    .description("Display current configuration + API key sources")
     .action(async () => {
+      Display.section("📋 dproc Configuration");
+
+      // Config file
+      console.log(chalk.bold("\nConfig File:"));
       try {
         const config = await ConfigManager.loadCoreConfig();
-
-        // Mask API keys
-        const display = JSON.parse(JSON.stringify(config));
-        if (display.llm?.apiKey) {
-          display.llm.apiKey = "[stored in keychain]";
-        }
-
-        Display.section("Current Configuration:");
-        console.log(JSON.stringify(display, null, 2));
+        console.log(chalk.green(`  ✓ ${ConfigManager.getCoreConfigPath()}`));
+        console.log(chalk.dim(JSON.stringify(config, null, 2)));
       } catch (error: any) {
-        log.error(error.message);
-        process.exit(1);
+        console.log(chalk.yellow("  ⚠ No config file found"));
+        console.log(chalk.dim("  Run: dproc init"));
+      }
+
+      // API Keys with sources
+      console.log(chalk.bold("\nAPI Keys:"));
+      const keysWithSources = await ConfigManager.listApiKeysWithSources();
+
+      if (keysWithSources.length === 0) {
+        console.log(chalk.yellow("  ⚠ None configured"));
+      } else {
+        for (const { provider, source } of keysWithSources) {
+          const icon = source === "keytar" ? "🔐" : "📝";
+          const sourceText = source === "keytar" ? "Keychain" : "Environment";
+          console.log(chalk.green(`  ${icon} ${provider}: ${sourceText}`));
+        }
+      }
+
+      // Ready status
+      console.log(chalk.bold("\n🚀 Status:"));
+      try {
+        const config = await ConfigManager.loadCoreConfig();
+        const provider = config.llm?.provider;
+        const { key } = await ConfigManager.getApiKeyWithSource(
+          provider || "gemini"
+        );
+
+        if (provider && key) {
+          console.log(chalk.green("  ✓ READY TO USE"));
+          console.log(chalk.cyan("  dproc ingest data.csv"));
+        } else {
+          console.log(chalk.yellow("  ⚠ INCOMPLETE"));
+          if (!provider) console.log(chalk.dim("  • Run: dproc init"));
+          if (!key)
+            console.log(
+              chalk.dim("  • Set: dproc config set-key gemini <key>")
+            );
+        }
+      } catch {
+        console.log(chalk.yellow("  ⚠ Not configured"));
+        console.log(chalk.dim("  Run: dproc init"));
       }
     });
 

@@ -46,7 +46,8 @@
     "keytar": "^7.9.0",
     "marked": "^17.0.1",
     "ora": "^9.0.0",
-    "puppeteer": "^24.31.0"
+    "puppeteer": "^24.31.0",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
