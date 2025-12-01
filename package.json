@@ -1,6 +1,6 @@
 {
   "name": "@aganitha/dproc-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "CLI tool for dproc - AI-powered data processing",
   "type": "module",
   "bin": {
