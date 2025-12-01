@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@aganitha/dproc':
-        specifier: file:../dproc
-        version: file:../dproc(typescript@5.9.3)
+        specifier: 1.0.5
+        version: 1.0.5(typescript@5.9.3)
       '@inquirer/prompts':
         specifier: ^8.0.1
         version: 8.0.1(@types/node@24.10.1)
@@ -72,8 +72,8 @@ importers:
 
 packages:
 
-  '@aganitha/dproc@file:../dproc':
-    resolution: {directory: ../dproc, type: directory}
+  '@aganitha/dproc@1.0.5':
+    resolution: {integrity: sha512-keLTdRJK7yN6pF/LNoirsi91cFvLJ4c+obpEk67Ffyo/sPALH434BqNtummMLNUwwWcVjPgKPn4VDUeYMv3bFA==}
     engines: {node: '>=18.0.0'}
 
   '@ai-sdk/gateway@2.0.17':
@@ -88,8 +88,8 @@ packages:
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
 
-  '@ai-sdk/openai@2.0.74':
-    resolution: {integrity: sha512-vvsL7rGoBEyQIePs630p31ebLeF+xxwLOrRKeIArHko8w7Wh9Kj3wL4Ns+PCzrEpAij31OKKDcxLQ1dSIg/qMw==}
+  '@ai-sdk/openai@2.0.75':
+    resolution: {integrity: sha512-ThDHg1+Jes7S0AOXa01EyLBSzZiZwzB5do9vAlufNkoiRHGTH1BmoShrCyci/TUsg4ky1HwbK4hPK+Z0isiE6g==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1062,8 +1062,8 @@ packages:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
 
-  yaml@2.8.1:
-    resolution: {integrity: sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==}
+  yaml@2.8.2:
+    resolution: {integrity: sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -1090,10 +1090,10 @@ packages:
 
 snapshots:
 
-  '@aganitha/dproc@file:../dproc(typescript@5.9.3)':
+  '@aganitha/dproc@1.0.5(typescript@5.9.3)':
     dependencies:
       '@ai-sdk/google': 2.0.44(zod@4.1.13)
-      '@ai-sdk/openai': 2.0.74(zod@4.1.13)
+      '@ai-sdk/openai': 2.0.75(zod@4.1.13)
       ai: 5.0.104(zod@4.1.13)
       csv-parse: 6.1.0
       debug: 4.4.3
@@ -1106,7 +1106,7 @@ snapshots:
       nunjucks: 3.2.4
       parquetjs: 0.11.2
       puppeteer: 24.31.0(typescript@5.9.3)
-      yaml: 2.8.1
+      yaml: 2.8.2
       zod: 4.1.13
     transitivePeerDependencies:
       - bare-abort-controller
@@ -1131,7 +1131,7 @@ snapshots:
       '@ai-sdk/provider-utils': 3.0.18(zod@4.1.13)
       zod: 4.1.13
 
-  '@ai-sdk/openai@2.0.74(zod@4.1.13)':
+  '@ai-sdk/openai@2.0.75(zod@4.1.13)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.18(zod@4.1.13)
@@ -2118,7 +2118,7 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yaml@2.8.1: {}
+  yaml@2.8.2: {}
 
   yargs-parser@21.1.1: {}
 
