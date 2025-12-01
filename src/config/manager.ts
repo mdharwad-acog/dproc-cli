@@ -2,10 +2,8 @@ import { ConfigManager as CoreConfigManager } from "@aganitha/dproc";
 import pkg from "fs-extra";
 import { homedir } from "os";
 import { join } from "path";
-import { createLogger } from "../utils/logger.js";
 
 const { readFile, writeFile, mkdir } = pkg;
-const log = createLogger("config-manager");
 
 export interface CliConfig {
   // CLI-specific settings
@@ -123,74 +121,6 @@ export class ConfigManager {
    */
   static validateCoreConfig() {
     return CoreConfigManager.validate();
-  }
-
-  /**
-   * Get API key with source information
-   */
-  static async getApiKeyWithSource(provider: string): Promise<{
-    key: string | null;
-    source: "keytar" | "env" | "none";
-  }> {
-    log.info("Getting API key for %s with source tracking", provider);
-
-    // 1. Try keytar first (via core ConfigManager)
-    try {
-      const keytarKeys = await this.listApiKeys();
-      if (keytarKeys.includes(provider)) {
-        const key = await this.getApiKey(provider);
-        if (key) {
-          log.info("Found API key in keytar: %s", provider);
-          return { key, source: "keytar" };
-        }
-      }
-    } catch (error) {
-      log.info("Keytar lookup failed for %s", provider);
-    }
-
-    // 2. Try environment variable
-    const envVarName = `${provider.toUpperCase()}_API_KEY`;
-    const envKey = process.env[envVarName];
-    if (envKey) {
-      log.info("Found API key in environment: %s", envVarName);
-      return { key: envKey, source: "env" };
-    }
-
-    return { key: null, source: "none" };
-  }
-
-  /**
-   * List API keys with sources
-   */
-  static async listApiKeysWithSources(): Promise<
-    Array<{ provider: string; source: "keytar" | "env" }>
-  > {
-    const result: Array<{ provider: string; source: "keytar" | "env" }> = [];
-
-    // Check keytar
-    try {
-      const keytarProviders = await this.listApiKeys();
-      for (const provider of keytarProviders) {
-        result.push({ provider, source: "keytar" });
-      }
-    } catch (error) {
-      log.info("Keytar unavailable, checking env vars only");
-    }
-
-    // Check environment variables (only if not in keytar)
-    const envProviders = [
-      "GEMINI_API_KEY",
-      "OPENAI_API_KEY",
-      "DEEPSEEK_API_KEY",
-    ];
-    for (const envVar of envProviders) {
-      const provider = envVar.replace("_API_KEY", "").toLowerCase();
-      if (process.env[envVar] && !result.find((r) => r.provider === provider)) {
-        result.push({ provider, source: "env" });
-      }
-    }
-
-    return result;
   }
 
   /**
